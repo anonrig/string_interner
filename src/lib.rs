@@ -2,7 +2,7 @@ use fxhash::{FxBuildHasher, FxHashMap};
 
 #[derive(Default)]
 pub struct Intern {
-    data: FxHashMap<&'static str, InternId>,
+    data: FxHashMap<String, InternId>,
     inputs: Vec<String>,
 }
 
@@ -36,20 +36,21 @@ impl Intern {
     /// ## Examples
     ///
     /// ```
-    /// use string_interning::Intern;
+    /// use string_interner::Intern;
     ///
     /// let mut intern = Intern::new();
     /// let id = intern.intern("hello");
-    /// assert!(id is InternId);
+    /// assert_eq!(id, 0);
     /// ```
     pub fn intern<V: Into<String> + AsRef<str>>(&mut self, input: V) -> InternId {
         if let Some(&id) = self.data.get(input.as_ref()) {
             return id;
         }
 
+        let input = input.into();
         let id = self.inputs.len() as InternId;
-        self.data.insert(input.as_ref(), id);
-        self.inputs.push(input.into());
+        self.data.insert(input.clone(), id);
+        self.inputs.push(input);
         id
     }
 
@@ -62,7 +63,7 @@ impl Intern {
     /// # Examples
     ///
     /// ```
-    /// use string_interning::Intern;
+    /// use string_interner::Intern;
     ///
     /// let mut intern = Intern::new();
     /// let id = intern.intern("hello");
@@ -78,7 +79,7 @@ impl Intern {
     /// # Examples
     ///
     /// ```
-    /// use string_interning::Intern;
+    /// use string_interner::Intern;
     ///
     /// let mut intern = Intern::new();
     /// let id = intern.intern("hello");
