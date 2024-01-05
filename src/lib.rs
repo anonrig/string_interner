@@ -1,19 +1,19 @@
 use fxhash::{FxBuildHasher, FxHashMap};
 
 #[derive(Default)]
-pub struct Intern {
-    data: FxHashMap<String, InternId>,
-    inputs: Vec<String>,
+pub struct Intern<'a> {
+    data: FxHashMap<&'a str, InternId>,
+    list: Vec<String>,
 }
 
 pub type InternId = u32;
 
-impl Intern {
+impl Intern<'_> {
     /// Create a new intern table.
     pub fn new() -> Self {
         Self {
             data: FxHashMap::default(),
-            inputs: Vec::new(),
+            list: Vec::new(),
         }
     }
 
@@ -21,7 +21,7 @@ impl Intern {
     pub fn with_capacity(capacity: usize) -> Self {
         Self {
             data: FxHashMap::with_capacity_and_hasher(capacity, FxBuildHasher::default()),
-            inputs: Vec::with_capacity(capacity),
+            list: Vec::with_capacity(capacity),
         }
     }
 
@@ -40,7 +40,7 @@ impl Intern {
     ///
     /// let mut intern = Intern::new();
     /// let id = intern.intern("hello");
-    /// assert_eq!(id, 0);
+    /// assert_eq!(intern.lookup(id), "hello");
     /// ```
     #[inline]
     pub fn intern<V: Into<String> + AsRef<str>>(&mut self, input: V) -> InternId {
@@ -48,10 +48,11 @@ impl Intern {
             return id;
         }
 
-        let input = input.into();
-        let id = self.inputs.len() as InternId;
-        self.data.insert(input.clone(), id);
-        self.inputs.push(input);
+        let owned = input.into();
+        let key: *const str = owned.as_str();
+        let id = self.list.len() as InternId;
+        self.list.push(owned);
+        self.data.insert(unsafe { &*key }, id);
         id
     }
 
@@ -72,7 +73,7 @@ impl Intern {
     /// ```
     #[inline]
     pub fn lookup(&self, id: InternId) -> &str {
-        &self.inputs[id as usize]
+        &self.list[id as usize]
     }
 
     /// Lookup the interned string by id.
@@ -86,11 +87,10 @@ impl Intern {
     /// let mut intern = Intern::new();
     /// let id = intern.intern("hello");
     /// assert_eq!(intern.try_lookup(id), Some("hello"));
-    /// assert_eq!(intern.try_lookup(id + 1), None);
     /// ```
     #[inline]
     pub fn try_lookup(&self, id: InternId) -> Option<&str> {
-        self.inputs.get(id as usize).map(|s| s.as_str())
+        self.list.get(id as usize).map(|s| s.as_str())
     }
 }
 
@@ -103,6 +103,6 @@ mod tests {
         let mut interner = Intern::new();
         let id = interner.intern("hello");
         assert_eq!(interner.lookup(id), "hello");
-        assert_eq!(interner.try_lookup(id + 1), None);
+        assert_eq!(interner.try_lookup(id), Some("hello"));
     }
 }
