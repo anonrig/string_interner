@@ -36,7 +36,7 @@ impl Intern {
     /// ## Examples
     ///
     /// ```
-    /// use string_interner::Intern;
+    /// use intern_string::Intern;
     ///
     /// let mut intern = Intern::new();
     /// let id = intern.intern("hello");
@@ -64,7 +64,7 @@ impl Intern {
     /// # Examples
     ///
     /// ```
-    /// use string_interner::Intern;
+    /// use intern_string::Intern;
     ///
     /// let mut intern = Intern::new();
     /// let id = intern.intern("hello");
@@ -81,7 +81,7 @@ impl Intern {
     /// # Examples
     ///
     /// ```
-    /// use string_interner::Intern;
+    /// use intern_string::Intern;
     ///
     /// let mut intern = Intern::new();
     /// let id = intern.intern("hello");

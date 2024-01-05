@@ -248,6 +248,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d77f7ec81a6d05a3abb01ab6eb7590f6083d08449fe5a1c8b1e620283546ccb7"
 
 [[package]]
+name = "intern_string"
+version = "0.1.0"
+dependencies = [
+ "codspeed-criterion-compat",
+ "criterion",
+ "fxhash",
+ "rand_core",
+ "rand_xorshift",
+]
+
+[[package]]
 name = "is-terminal"
 version = "0.4.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -500,17 +511,6 @@ dependencies = [
  "itoa",
  "ryu",
  "serde",
-]
-
-[[package]]
-name = "string_interner"
-version = "0.1.0"
-dependencies = [
- "codspeed-criterion-compat",
- "criterion",
- "fxhash",
- "rand_core",
- "rand_xorshift",
 ]
 
 [[package]]

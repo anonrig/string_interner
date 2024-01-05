@@ -1,5 +1,8 @@
 [package]
-name = "string_interner"
+name = "intern_string"
+description = "Fast and memory efficient string interning for Rust"
+repository = "https://github.com/anonrig/string_interner"
+license = "MIT"
 version = "0.1.0"
 edition = "2021"
 
