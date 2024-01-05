@@ -42,6 +42,7 @@ impl Intern {
     /// let id = intern.intern("hello");
     /// assert_eq!(id, 0);
     /// ```
+    #[inline]
     pub fn intern<V: Into<String> + AsRef<str>>(&mut self, input: V) -> InternId {
         if let Some(&id) = self.data.get(input.as_ref()) {
             return id;
@@ -69,6 +70,7 @@ impl Intern {
     /// let id = intern.intern("hello");
     /// assert_eq!(intern.lookup(id), "hello");
     /// ```
+    #[inline]
     pub fn lookup(&self, id: InternId) -> &str {
         &self.inputs[id as usize]
     }
@@ -86,6 +88,7 @@ impl Intern {
     /// assert_eq!(intern.try_lookup(id), Some("hello"));
     /// assert_eq!(intern.try_lookup(id + 1), None);
     /// ```
+    #[inline]
     pub fn try_lookup(&self, id: InternId) -> Option<&str> {
         self.inputs.get(id as usize).map(|s| s.as_str())
     }
