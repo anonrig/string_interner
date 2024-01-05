@@ -38,7 +38,7 @@ pub fn intern_and_lookup(c: &mut Criterion) {
             BenchmarkId::from_parameter(vec_length),
             &data,
             |b, dataset| {
-                let mut intern = string_interner::Intern::new();
+                let mut intern = intern_string::Intern::new();
                 b.iter(|| {
                     for data in dataset {
                         let id = intern.intern(black_box(data));
