@@ -43,15 +43,16 @@ impl Intern<'_> {
     /// assert_eq!(intern.lookup(id), "hello");
     /// ```
     #[inline]
-    pub fn intern<V: Into<String> + AsRef<str>>(&mut self, input: V) -> InternId {
-        if let Some(&id) = self.data.get(input.as_ref()) {
+    pub fn intern<V: Into<String>>(&mut self, input: V) -> InternId {
+        let input = input.into();
+
+        if let Some(&id) = self.data.get(&*input) {
             return id;
         }
 
-        let owned = input.into();
-        let key: *const str = owned.as_str();
+        let key: *const str = input.as_str();
         let id = self.list.len() as InternId;
-        self.list.push(owned);
+        self.list.push(input);
         self.data.insert(unsafe { &*key }, id);
         id
     }
