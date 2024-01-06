@@ -52,6 +52,11 @@ impl Intern<'_> {
         let key: *const str = owned.as_str();
         let id = self.list.len() as InternId;
         self.list.push(owned);
+
+        // SAFETY: we can do this because the allocations inside of a String
+        // are stable, and so passing ownership to push does not change the
+        // address. furthermore, we have no current API that will allow the
+        // strings inside data to be modified, and so they will never reallocate
         self.data.insert(unsafe { &*key }, id);
         id
     }
