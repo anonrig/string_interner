@@ -3,7 +3,7 @@ use fxhash::{FxBuildHasher, FxHashMap};
 #[derive(Default)]
 pub struct Intern<'a> {
     data: FxHashMap<&'a str, InternId>,
-    list: Vec<String>,
+    list: Vec<Box<str>>,
 }
 
 pub type InternId = u32;
@@ -43,22 +43,26 @@ impl Intern<'_> {
     /// assert_eq!(intern.lookup(id), "hello");
     /// ```
     #[inline]
-    pub fn intern<V: Into<String>>(&mut self, input: V) -> InternId {
+    pub fn intern<V: Into<Box<str>>>(&mut self, input: V) -> InternId {
         let input = input.into();
 
         if let Some(&id) = self.data.get(&*input) {
             return id;
         }
 
-        let key: *const str = input.as_str();
+        let str_data = input.as_ptr();
+        let str_len = input.len();
+
         let id = self.list.len() as InternId;
         self.list.push(input);
 
         // SAFETY: we can do this because the allocations inside of a String
         // are stable, and so passing ownership to push does not change the
-        // address. furthermore, we have no current API that will allow the
-        // strings inside data to be modified, and so they will never reallocate
-        self.data.insert(unsafe { &*key }, id);
+        // address.
+        let k =
+            unsafe { std::str::from_utf8_unchecked(std::slice::from_raw_parts(str_data, str_len)) };
+
+        self.data.insert(k, id);
         id
     }
 
@@ -96,7 +100,7 @@ impl Intern<'_> {
     /// ```
     #[inline]
     pub fn try_lookup(&self, id: InternId) -> Option<&str> {
-        self.list.get(id as usize).map(|s| s.as_str())
+        self.list.get(id as usize).map(|s| &**s)
     }
 }
 
