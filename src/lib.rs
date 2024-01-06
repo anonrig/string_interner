@@ -105,4 +105,18 @@ mod tests {
         assert_eq!(interner.lookup(id), "hello");
         assert_eq!(interner.try_lookup(id), Some("hello"));
     }
+
+    #[test]
+    fn reallocate() {
+        let mut interner = Intern::with_capacity(1);
+        let id1 = interner.intern("hello");
+
+        // this should reallocate the internal list
+        let id2 = interner.intern("world");
+
+        assert_eq!(interner.lookup(id1), "hello");
+        assert_eq!(interner.try_lookup(id1), Some("hello"));
+        assert_eq!(interner.lookup(id2), "world");
+        assert_eq!(interner.try_lookup(id2), Some("world"));
+    }
 }
